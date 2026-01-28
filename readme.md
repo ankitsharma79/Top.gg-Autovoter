@@ -19,9 +19,10 @@ A Python automation tool that helps vote for Discord bots on top.gg using Discor
 
 ## 🔧 Prerequisites
 
-- Python 3.8 or higher
+- Python 3.11 or higher
 - Discord account(s)
 - top.gg bot ID you want to vote for
+
 
 
 
