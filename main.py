@@ -7,7 +7,7 @@ import logging
 import random
 import os
 
-BOT_URL = "https://top.gg/bot/1246092001443713027"
+BOT_URL = # your bot's token here
 
 logging.basicConfig(
     level=logging.INFO,
@@ -23,27 +23,9 @@ def save_retry_token(token):
         f.write(token + "\n")
 
 def login_with_token(driver, token):
-    logging.info("Injecting token...")
+    logging.info("Logging token...")
     driver.get("https://discord.com/login")
     time.sleep(3)
-
-    script = f"""
-    function login(token) {{
-        setInterval(() => {{
-            document.body.appendChild(document.createElement(`iframe`)).contentWindow.localStorage.token = `"{token}"`;
-        }}, 50);
-        setTimeout(() => {{
-            location.reload();
-        }}, 2500);
-    }}
-    login("{token}");
-    """
-    driver.execute_script(script)
-    time.sleep(5)
-
-def zoom_out_page(driver, level=0.5):
-    driver.execute_script(f"document.body.style.zoom='{level}'")
-    logging.info(f"Zoom set to {int(level * 100)}%")
 
 def handle_authorization(driver, wait):
     zoom_and_scroll_to_authorize(driver)
@@ -68,7 +50,7 @@ def handle_authorization(driver, wait):
     logging.info("Waiting for manual authorization (up to 30 seconds)...")
 
     for _ in range(30):
-        if "top.gg/bot" in driver.current_url:
+        if "top.gg/bot" in driver.current_uri:
             logging.info("Manual authorization detected. Continuing...")
             return True
         time.sleep(1)
@@ -121,7 +103,6 @@ def vote_with_token(token):
         for _ in range(20):
             if "discord.com/oauth2" in driver.current_url:
                 logging.info("OAuth page detected")
-                zoom_out_page(driver, 0.5) 
                 break
             time.sleep(0.5)
 
@@ -139,9 +120,6 @@ def vote_with_token(token):
         ))
         vote_link.click()
         time.sleep(3)
-
-        vote_button = wait.until(EC.element_to_be_clickable(
-            (By.XPATH, "//button[contains(., 'Vote')]")
         ))
         vote_button.click()
         logging.info("Voted Successfully!")
@@ -177,9 +155,7 @@ def main():
         logging.info("Processing retry tokens...")
         retry_tokens = get_tokens("retry.txt")
         os.remove("retry.txt")
-        for token in retry_tokens:
-            process_token(token, retry=True)
-            time.sleep(random.uniform(2, 3))
 
 if __name__ == "__main__":
+
     main()
